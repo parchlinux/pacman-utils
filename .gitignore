@@ -1,0 +1,35 @@
+# Build directories
+/build/
+/build-*/
+build/
+subprojects/
+compile_commands.json
+.cache/
+
+# Compiled objects & binaries
+*.o
+*.a
+*.so
+*.dylib
+pacu
+pu
+test_*
+
+# Makepkg artifacts
+/pkg/
+/src/
+*.pkg.tar.zst
+*.pkg.tar.xz
+*.pkg.tar.gz
+*.tar.gz
+*.tar.xz
+*.tar.zst
+pacman-utils/
+
+# Editor temporary files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+.DS_Store
