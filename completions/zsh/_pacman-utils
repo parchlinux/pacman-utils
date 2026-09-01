@@ -1,0 +1,65 @@
+#compdef pacman-utils pacedit pacrepo pacdoctor pacwhy pacclean pacautoremove
+
+_pacman_utils() {
+    local -a commands
+    commands=(
+        'edit-sources:Safely edit pacman.conf and mirrorlists'
+        'repo:Manage repositories (list, add, remove, enable, disable)'
+        'hold:Prevent packages from being upgraded (IgnorePkg)'
+        'unhold:Resume package upgrades'
+        'show-held:List all held/ignored packages'
+        'mark:Change package install reason'
+        'autoremove:Find and remove orphan packages'
+        'cache:Inspect and clean package cache'
+        'check-updates:Safely check for updates'
+        'why:Explain why a package is installed'
+        'deptree:Display dependency tree'
+        'search-file:Search which package owns a file'
+        'history:View transaction history'
+        'top-sizes:List packages sorted by size'
+        'doctor:Diagnose system health'
+        'verify:Verify package files'
+        'diff:Manage .pacnew and .pacsave files'
+        'rank-mirrors:Benchmark and rank mirrors'
+        'keys:Manage and repair pacman GPG keyring'
+        'news:Fetch distribution announcements'
+    )
+
+    _arguments \
+        '1: :->command' \
+        '*: :->args'
+
+    case $state in
+        command)
+            _describe -t commands 'pacman-utils command' commands
+            ;;
+        args)
+            case $words[1] in
+                edit-sources)
+                    _values 'sources' 'pacman.conf' 'mirrorlist' 'parch-mirrors' 'chaotic-mirrorlist'
+                    ;;
+                repo)
+                    _values 'actions' 'list' 'add' 'remove' 'enable' 'disable'
+                    ;;
+                hold|unhold|why|deptree|verify)
+                    _values 'packages' $(pacman -Qq 2>/dev/null)
+                    ;;
+                mark)
+                    if [[ $CURRENT -eq 2 ]]; then
+                        _values 'reason' 'as-explicit' 'as-dep'
+                    else
+                        _values 'packages' $(pacman -Qq 2>/dev/null)
+                    fi
+                    ;;
+                cache)
+                    _values 'actions' 'status' 'clean'
+                    ;;
+                keys)
+                    _values 'actions' 'fix' 'refresh' 'list' 'reset'
+                    ;;
+            esac
+            ;;
+    esac
+}
+
+_pacman_utils "$@"

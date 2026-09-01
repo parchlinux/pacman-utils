@@ -1,0 +1,76 @@
+.TH PACMAN-UTILS 8 "September 2026" "Parch Linux" "System Administration"
+.SH NAME
+pacman-utils \- Advanced, high-performance Pacman utilities for Parch Linux
+
+.SH SYNOPSIS
+.B pacman-utils
+[\fIGLOBAL OPTIONS\fR] \fICOMMAND\fR [\fICOMMAND OPTIONS\fR]
+
+.SH DESCRIPTION
+.B pacman-utils
+provides a comprehensive suite of C utilities for managing Pacman repositories, caches, package holding, dependency queries, file verification, system health, and mirror ranking.
+
+.SH COMMANDS
+.TP
+.B edit-sources [\fIFILE\fR]
+Safely opens \fI/etc/pacman.conf\fR or mirrorlists in \fB$EDITOR\fR with atomic replacement and syntax validation.
+.TP
+.B repo \fI<list|add|remove|enable|disable>\fR
+Manages repository stanzas in \fI/etc/pacman.conf\fR.
+.TP
+.B hold \fI<PACKAGE...>\fR
+Adds packages to \fIIgnorePkg\fR in \fI/etc/pacman.conf\fR.
+.TP
+.B unhold \fI<PACKAGE...>\fR
+Removes packages from \fIIgnorePkg\fR.
+.TP
+.B show-held
+Lists all held and ignored packages.
+.TP
+.B mark \fI<as-explicit|as-dep>\fR \fI<PACKAGE...>\fR
+Changes package installation reason.
+.TP
+.B autoremove [\fI-n, --dry-run\fR] [\fI-y, --yes\fR]
+Finds and removes unused orphan packages.
+.TP
+.B cache \fI<status|clean>\fR [\fI-k <N>\fR] [\fI-u\fR]
+Inspects or cleans the package cache in \fI/var/cache/pacman/pkg\fR.
+.TP
+.B check-updates [\fI-q, --quiet\fR]
+Checks for available updates in a non-locking sandbox without requiring root.
+.TP
+.B why \fI<PACKAGE>\fR
+Explains why an installed package is present on the system.
+.TP
+.B deptree [\fI-r\fR] [\fI-d <DEPTH>\fR] \fI<PACKAGE>\fR
+Displays an ASCII/Unicode dependency tree.
+.TP
+.B search-file \fI<PATTERN>\fR
+Finds which package owns a specific file or library.
+.TP
+.B history [\fI-n <LIMIT>\fR] [\fIPACKAGE\fR]
+Views transactions from \fI/var/log/pacman.log\fR.
+.TP
+.B top-sizes [\fI-n <LIMIT>\fR]
+Lists installed packages sorted by disk footprint.
+.TP
+.B doctor
+Diagnoses system health, lock files, broken configs, and partition space.
+.TP
+.B verify [\fI--all | PACKAGE...\fR]
+Verifies file integrity and checks for missing package files.
+.TP
+.B diff
+Interactively manages and merges \fB.pacnew\fR and \fB.pacsave\fR files.
+.TP
+.B rank-mirrors [\fI-t <TOP>\fR] [\fI-o <OUTPUT>\fR]
+Benchmarks mirror download speeds and generates an optimized mirrorlist.
+.TP
+.B keys \fI<fix|refresh|list|reset>\fR
+Manages and repairs the Pacman GPG keyring.
+.TP
+.B news [\fI-n <LIMIT>\fR]
+Fetches recent distribution announcements.
+
+.SH AUTHORS
+Written for Parch Linux.

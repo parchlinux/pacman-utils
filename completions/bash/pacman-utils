@@ -1,0 +1,51 @@
+# Bash completion for pacman-utils
+
+_pacman_utils() {
+    local cur prev words cword
+    _init_completion || return
+
+    local commands="edit-sources repo hold unhold show-held mark autoremove cache check-updates why deptree search-file history top-sizes doctor verify diff rank-mirrors keys news"
+
+    if [[ $cword -eq 1 ]]; then
+        COMPREPLY=( $(compgen -W "$commands --help --version --color --verbose --quiet --dry-run" -- "$cur") )
+        return 0
+    fi
+
+    local command="${words[1]}"
+    case "$command" in
+        edit-sources)
+            COMPREPLY=( $(compgen -W "pacman.conf mirrorlist parch-mirrors chaotic-mirrorlist --help" -- "$cur") )
+            ;;
+        repo)
+            COMPREPLY=( $(compgen -W "list add remove enable disable --server --include --siglevel --help" -- "$cur") )
+            ;;
+        hold|unhold|why|deptree|verify)
+            if [[ $cur != -* ]]; then
+                COMPREPLY=( $(compgen -W "$(pacman -Qq 2>/dev/null)" -- "$cur") )
+            fi
+            ;;
+        mark)
+            if [[ $cword -eq 2 ]]; then
+                COMPREPLY=( $(compgen -W "as-explicit as-dep" -- "$cur") )
+            else
+                COMPREPLY=( $(compgen -W "$(pacman -Qq 2>/dev/null)" -- "$cur") )
+            fi
+            ;;
+        cache)
+            COMPREPLY=( $(compgen -W "status clean --keep --uninstalled --dry-run --yes --help" -- "$cur") )
+            ;;
+        keys)
+            COMPREPLY=( $(compgen -W "fix refresh list reset --help" -- "$cur") )
+            ;;
+        *)
+            ;;
+    esac
+}
+
+complete -F _pacman_utils pacman-utils
+complete -F _pacman_utils pacedit
+complete -F _pacman_utils pacrepo
+complete -F _pacman_utils pacdoctor
+complete -F _pacman_utils pacwhy
+complete -F _pacman_utils pacclean
+complete -F _pacman_utils pacautoremove

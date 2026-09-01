@@ -1,0 +1,165 @@
+.TH PACU 8 "September 2026" "Parch GNU/Linux Project 2026" "System Administration Manual"
+.SH NAME
+pacu, pu \- Advanced, high-performance Pacman utilities suite for Parch GNU/Linux
+
+.SH SYNOPSIS
+.B pacu
+[\fIGLOBAL OPTIONS\fR] \fICOMMAND\fR [\fICOMMAND OPTIONS\fR]
+.br
+.B pu
+[\fIGLOBAL OPTIONS\fR] \fICOMMAND\fR [\fICOMMAND OPTIONS\fR]
+
+.SH DESCRIPTION
+\fBpacu\fR (also accessible via the short alias \fBpu\fR) is a high-performance C utility suite designed specifically for \fBParch GNU/Linux\fR (and Arch Linux derivatives). Inspired by Debian/Ubuntu's \fBapt\fR/\fBapt-mark\fR and Fedora's \fBdnf\fR, it provides native \fBlibalpm\fR integrations for repository management, safe configuration editing, dependency discovery, cache pruning, mirror ranking, and system diagnostics without script interpreter overhead.
+
+.SH GLOBAL OPTIONS
+.TP
+.B \-\-color=\fI<auto|always|never>\fR
+Control ANSI terminal colorization. Honors the \fBNO_COLOR\fR environment variable.
+.TP
+.B \-\-config=\fI<path>\fR
+Specify an alternate pacman configuration file instead of \fI/etc/pacman.conf\fR.
+.TP
+.B \-\-dbpath=\fI<path>\fR
+Specify an alternate database path instead of \fI/var/lib/pacman\fR.
+.TP
+.B \-\-root=\fI<path>\fR
+Specify an alternate installation root directory.
+.TP
+.B \-n, \-\-dry\-run
+Simulate operations without modifying the filesystem or database.
+.TP
+.B \-v, \-\-verbose
+Display verbose execution details.
+.TP
+.B \-q, \-\-quiet
+Suppress informational headers and print only essential outputs.
+.TP
+.B \-h, \-\-help
+Display command-line help and subcommand catalog.
+.TP
+.B \-V, \-\-version
+Display version and copyright information.
+
+.SH COMMANDS
+
+.SS Repository & Sources Management
+.TP
+.B edit\-sources \fR[\fIPATH\fR | \fImirrorlist\fR | \fIparch-mirrors\fR | \fIchaotic-mirrorlist\fR]
+Safely edits configuration and mirrorlist files in \fB$VISUAL\fR or \fB$EDITOR\fR. Staged in a temporary file with automatic \fBlibalpm\fR syntax validation before atomic replacement and automatic backup creation (\fI.bak\fR).
+.br
+\fIAlias Shortcut:\fR \fBpacedit\fR
+.TP
+.B repo list
+Displays all active, testing, and disabled repositories configured in \fI/etc/pacman.conf\fR, their SigLevel, and included mirror sources.
+.br
+\fIAlias Shortcut:\fR \fBpacrepo list\fR
+.TP
+.B repo add \fINAME\fR [\-\-server \fIURL\fR] [\-\-include \fIPATH\fR] [\-\-siglevel \fILEVEL\fR]
+Appends a new repository stanza to \fI/etc/pacman.conf\fR.
+.TP
+.B repo remove \fINAME\fR
+Removes a repository block from the configuration file.
+.TP
+.B repo enable \fINAME\fR | repo disable \fINAME\fR
+Toggles commenting on repository stanzas.
+.TP
+.B rank\-mirrors \fR[\fI\-f <FILE>\fR] [\fI\-o <OUTPUT>\fR] [\fI\-t <TOP_N>\fR] [\fI\-s <TIMEOUT>\fR]
+Performs concurrent HTTP/HTTPS latency and throughput probes across mirrors, generating a ranked mirrorlist sorted by fastest response times.
+
+.SS Package Management & Holding (apt-mark equivalents)
+.TP
+.B hold \fIPACKAGE...\fR
+Locks packages from upgrade transactions by safely appending them to \fIIgnorePkg\fR in \fI/etc/pacman.conf\fR.
+.TP
+.B unhold \fIPACKAGE...\fR
+Resumes package upgrades by removing them from \fIIgnorePkg\fR.
+.TP
+.B show\-held
+Lists all currently held and ignored packages along with their installed versions and repository availability.
+.TP
+.B mark \fI<as-explicit | as-dep>\fR \fIPACKAGE...\fR
+Changes the installation reason of packages in the local database.
+.TP
+.B check\-updates \fR[\fI\-q, \-\-quiet\fR]
+Synchronizes repository databases in an isolated temporary sandbox and outputs available updates without acquiring the global pacman database lock (\fIdb.lck\fR).
+
+.SS Dependencies & Querying
+.TP
+.B why \fIPACKAGE\fR
+Traces and prints the reverse dependency chain explaining why a package is installed, leading up to an explicitly installed top package.
+.br
+\fIAlias Shortcut:\fR \fBpacwhy\fR
+.TP
+.B deptree \fR[\fI\-r, \-\-reverse\fR] [\fI\-d <DEPTH>\fR] \fIPACKAGE\fR
+Visualizes forward or reverse dependencies in an indented ASCII/Unicode tree.
+.TP
+.B search\-file \fIPATTERN\fR
+Rapidly locates which installed package owns a specific file path or binary.
+.TP
+.B history \fR[\fI\-n <LIMIT>\fR] [\fI\-r\fR] [\fIPACKAGE\fR]
+Inspects transaction records in \fI/var/log/pacman.log\fR and presents colorized installation, upgrade, reinstall, and removal histories.
+
+.SS System Diagnostics & Maintenance
+.TP
+.B doctor
+Comprehensive health verification tool: inspects database locks, database consistency, orphan accumulation, unmerged \fI.pacnew\fR files, GPG keyring state, and disk space across critical mount points (\fI/\fR, \fI/boot\fR, \fI/var/cache/pacman/pkg\fR).
+.br
+\fIAlias Shortcut:\fR \fBpacdoctor\fR
+.TP
+.B autoremove \fR[\fI\-n, \-\-dry-run\fR] [\fI\-y, \-\-yes\fR]
+Calculates the full dependency orphan tree and cleans unneeded dependency packages to reclaim disk space.
+.br
+\fIAlias Shortcut:\fR \fBpacorphans\fR, \fBpacautoremove\fR
+.TP
+.B cache status
+Displays package cache directory path, package count, and total disk footprint.
+.TP
+.B cache clean \fR[\fI\-k <KEEP_COUNT>\fR] [\fI\-u, \-\-uninstalled\fR] [\fI\-n, \-\-dry-run\fR]
+Purges old package tarballs while retaining the latest \fIN\fR versions (default: 2), removes uninstalled cached versions, and purges incomplete \fI.part\fR downloads.
+.br
+\fIAlias Shortcut:\fR \fBpacclean\fR
+.TP
+.B top\-sizes \fR[\fI\-n <LIMIT>\fR]
+Lists all installed packages ordered by on-disk size footprint with human-readable units and percentage of total system space.
+.TP
+.B verify \fR[\fI\-\-all | PACKAGE...\fR]
+Verifies package file integrity and detects missing files against local ALPM databases.
+.TP
+.B diff
+Discovers unmerged \fI.pacnew\fR and \fI.pacsave\fR configuration files, providing an interactive interface to view unified diffs, launch external merge tools (\fIvimdiff\fR, \fImeld\fR), replace, or discard files.
+.TP
+.B keys \fI<fix | refresh | list | reset>\fR
+Keyring maintenance and repair helper.
+.TP
+.B news \fR[\fI\-n <LIMIT>\fR]
+Fetches and formats recent Parch GNU/Linux and Arch Linux distribution announcements and critical update notices.
+
+.SH FILES
+.TP
+.I /etc/pacman.conf
+The primary pacman package manager configuration file.
+.TP
+.I /etc/pacman.d/
+Directory containing repository mirrorlists and drop-in configurations.
+.TP
+.I /var/cache/pacman/pkg/
+Default package cache directory.
+.TP
+.I /var/log/pacman.log
+The pacman transaction history log.
+.TP
+.I /var/lib/pacman/db.lck
+The pacman database lock file.
+
+.SH COPYRIGHT
+Copyright (C) 2026 Parch GNU/Linux Project <https://parchlinux.com>
+.br
+License: GNU Affero General Public License version 3 or later (AGPLv3+).
+.br
+This is free software: you are free to change and redistribute it under the terms of the AGPLv3.
+
+.SH SEE ALSO
+.BR pacman (8),
+.BR pacman.conf (5),
+.BR makepkg (8)
