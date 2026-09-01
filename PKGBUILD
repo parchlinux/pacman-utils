@@ -1,8 +1,7 @@
 # Maintainer: Parch GNU/Linux Project <contact@parchlinux.com>
 # Copyright (C) 2026 Parch GNU/Linux Project <https://parchlinux.com>
 
-pkgname=pacu-git
-_pkgname=pacu
+pkgname=pacu
 pkgver=1.0.0.r0.g0000000
 pkgrel=1
 pkgdesc="Advanced, high-performance Pacman utilities suite for Parch GNU/Linux"
@@ -11,8 +10,8 @@ url="https://parchlinux.com"
 license=('AGPL-3.0-or-later')
 depends=('pacman' 'curl' 'glibc')
 makedepends=('git' 'meson' 'ninja' 'pkgconf' 'gcc')
-provides=('pacu' 'pu' 'pacman-utils')
-conflicts=('pacu' 'pu' 'pacman-utils')
+provides=('pacman-utils' 'pu')
+conflicts=('pacman-utils')
 replaces=('pacman-utils')
 source=("git+https://github.com/parchlinux/pacman-utils.git")
 sha256sums=('SKIP')
